@@ -10,7 +10,7 @@ def format_passports(indata):
     out = [e.replace("\n", ';').strip() for e in out]
     return out
 
-def verify_passport(passport):
+def verify_passport(passport,extra_validation=True):
     ignore_missing_cid = True
     missing_fields = []
     valid_fields = ['byr','iyr','eyr','hgt','hcl','ecl','pid','cid']
@@ -25,6 +25,8 @@ def verify_passport(passport):
             missing_fields.append(vf)
     if missing_fields:
         return False
+    if not extra_validation:
+        return True
     if validate_passport_fields(parsed_passport):
         if LOG: print('valid passport')
         return True
@@ -109,10 +111,10 @@ def v_cid(cid):
 
 
 
-def validate_passports(passports):
+def validate_passports(passports, extra_validation=True):
     valid_passports = []
     for passport in passports:
-        if verify_passport(passport):
+        if verify_passport(passport, extra_validation=extra_validation):
             valid_passports.append(passport)
     return valid_passports
 
@@ -124,5 +126,7 @@ with open('test_data.txt', 'r') as f:
 
 # passports = format_passports(testdata)
 passports = format_passports(indata)
-valid_passports = validate_passports(passports)
-print(len(valid_passports))
+first_valid_passports = validate_passports(passports, extra_validation=False)
+print(len(first_valid_passports))
+second_valid_passports = validate_passports(passports, extra_validation=True)
+print(len(second_valid_passports))
